@@ -1,0 +1,25 @@
+{
+  "name": "mahibridge",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devEngines": {
+    "runtime": {
+      "name": "bun",
+      "version": ">=1.2.12 <2.0.0"
+    },
+    "packageManager": {
+      "name": "bun",
+      "version": ">=1.2.12 <2.0.0"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "^1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

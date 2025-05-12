@@ -1,0 +1,5 @@
+# Xero OAuth 2.0 authorization session
+session.json
+
+# input/output data
+data/
