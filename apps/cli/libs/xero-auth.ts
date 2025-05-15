@@ -3,9 +3,7 @@ import open from "open";
 import * as client from "openid-client";
 
 if (!process.env.PUBLIC_XERO_OAUTH_CLIENT_ID) {
-  throw new Error(
-    "Please set the PUBLIC_XERO_OAUTH_CLIENT_ID environment variable to your Xero app's client ID."
-  );
+  throw new Error("Please set the PUBLIC_XERO_OAUTH_CLIENT_ID environment variable to your Xero app's client ID.");
 }
 
 const CONFIG = {
@@ -20,9 +18,7 @@ function discoverConfig() {
   return client.discovery(new URL(CONFIG.discoveryUrl), CONFIG.clientId);
 }
 
-async function authorize(): Promise<
-  client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
-> {
+async function authorize(): Promise<client.TokenEndpointResponse & client.TokenEndpointResponseHelpers> {
   const config = await discoverConfig();
 
   const codeVerifier = client.randomPKCECodeVerifier();
@@ -99,10 +95,7 @@ async function persistedAuthorize() {
     if (sessionFile.lastModified + session.expires_in! * 1000 < Date.now()) {
       const config = await discoverConfig();
       try {
-        const tokens = await client.refreshTokenGrant(
-          config,
-          session.refresh_token!
-        );
+        const tokens = await client.refreshTokenGrant(config, session.refresh_token!);
         sessionFile.write(JSON.stringify(tokens));
         return tokens;
       } catch (error) {

@@ -1,16 +1,16 @@
 {
-	"name": "cli",
-	"type": "module",
-	"scripts": {
-		"start": "bun run index.ts"
-	},
-	"dependencies": {
-		"@inquirer/prompts": "^7.5.0",
-		"fast-csv": "^5.0.2",
-		"fuse.js": "^7.1.0",
-		"ky": "^1.8.1",
-		"open": "^10.1.2",
-		"openid-client": "^6.5.0",
-		"remeda": "^2.21.3"
-	}
+  "name": "cli",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.5.0",
+    "fast-csv": "^5.0.2",
+    "fuse.js": "^7.1.0",
+    "ky": "^1.8.1",
+    "open": "^10.1.2",
+    "openid-client": "^6.5.0",
+    "remeda": "^2.21.3"
+  }
 }
