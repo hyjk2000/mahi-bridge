@@ -1,15 +1,26 @@
-# mahibridge
+# Mahi Bridge
 
-To install dependencies:
+_Mahi Bridge_ is a Chrome extension designed to help Scouts Aotearoa (Scouts NZ) group treasurers compare member records between **Mahi Tahi** and **Xero**.
 
-```bash
+Built with [WXT](https://wxt.dev) and [Bun](https://bun.sh).
+
+## Quick Start
+
+Obtain an OAuth 2.0 client ID for [Xero API](https://developer.xero.com/app/manage) and create an `.env.local` file in `apps/webext:
+
+```env
+VITE_XERO_OAUTH_CLIENT_ID=<Your Client ID>
+```
+
+Start the dev server:
+
+```shell
 bun install
+bun -F webext dev
 ```
 
-To run:
+Then, load unpacked extension from `apps/webext/.output/chrome-mv3-dev`.
 
-```bash
-bun run index.ts
-```
+## Privacy
 
-This project was created using `bun init` in bun v1.2.12. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+See `PRIVACY.md`.
