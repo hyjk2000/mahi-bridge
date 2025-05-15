@@ -13,7 +13,10 @@ function OAuthXero() {
 
   return (
     <div className="flex flex-col items-center-safe justify-center min-h-svh p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Mahi Bridge</h1>
+      <div className="flex items-center gap-2">
+        <img src="/icon/96.png" className="size-12" alt="Mahi Bridge Logo" />
+        <h1 className="text-2xl font-semibold">Mahi Bridge</h1>
+      </div>
       <Form method="post">
         <button
           type="submit"

@@ -9,7 +9,10 @@ function Layout() {
   return (
     <div className="flex flex-col items-center-safe justify-start min-h-svh p-6">
       <header className="mb-6 flex self-stretch items-center-safe justify-between">
-        <h1 className="text-2xl font-semibold">Mahi Bridge</h1>
+        <div className="flex items-center gap-2">
+          <img src="/icon/96.png" className="size-12" alt="Mahi Bridge Logo" />
+          <h1 className="text-2xl font-semibold">Mahi Bridge</h1>
+        </div>
         <p className="text-sm">
           Welcome, {data?.name} &nbsp;
           <Link to="/sign-out" className="underline text-blue-600 hover:text-blue-500">
