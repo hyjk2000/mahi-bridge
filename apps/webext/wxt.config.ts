@@ -13,7 +13,7 @@ export default defineConfig({
     key: import.meta.env.VITE_EXT_PUBLIC_KEY,
     name: "Mahi Bridge",
     description: "A bridge between Mahi Tahi & Xero.",
-    version: "0.0.1",
+    version: "0.0.2",
     permissions: ["identity", "storage"],
     host_permissions: ["https://identity.xero.com/.well-known/openid-configuration", "https://api.xero.com/*"],
     action: {
