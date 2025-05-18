@@ -1,60 +1,20 @@
 import { createWriteStream } from "node:fs";
+import { createXeroAPIClient } from "@mahibridge/xero";
 import Fuse from "fuse.js";
-import ky from "ky";
-import { map, pick, pipe, piped, prop, reduce, tap } from "remeda";
-import { loadCsv, outputCsv } from "./libs/csv.ts";
-import type { MahiContact } from "./libs/mahi-schemas.ts";
-import { persistedAuthorize } from "./libs/xero-auth.ts";
-import type { Contact, ContactGroup, Paginated, Tenant } from "./libs/xero-schemas.ts";
+import { map, pick, pipe, piped, reduce } from "remeda";
+import { loadCsv, outputCsv } from "./libs/csv";
+import type { Mahi } from "./libs/types.ts";
+import { persistedAuthorize } from "./libs/xero-auth";
+
+const xeroClient = createXeroAPIClient(await persistedAuthorize().then(({ access_token }) => access_token));
 
 const toFile = piped((path: string) => new URL(path, import.meta.url).pathname, createWriteStream);
 
-const restClient = ky.extend({
-  prefixUrl: "https://api.xero.com",
-  hooks: {
-    beforeRequest: [
-      async (request) => {
-        const { access_token } = await persistedAuthorize();
-        request.headers.set("Authorization", `Bearer ${access_token}`);
-      },
-    ],
-  },
-});
-
-const [tenant] = await restClient.get<Tenant[]>("connections").json();
-
-console.log("Xero Tenant: ", tenant);
-
-const { ContactGroups: xeroContactGroups } = await restClient
-  .get<{ ContactGroups: ContactGroup[] }>("api.xro/2.0/ContactGroups", {
-    headers: {
-      "Xero-tenant-id": tenant.tenantId,
-    },
-    searchParams: {
-      Statuses: "ACTIVE",
-    },
-  })
-  .json();
+const xeroContactGroups = await xeroClient.getContactGroups();
 
 outputCsv(toFile("data/xero-contact-groups.csv"), xeroContactGroups);
 
-const xeroContacts = pipe(
-  await restClient
-    .get<Paginated & { Contacts: Contact[] }>("api.xro/2.0/Contacts", {
-      headers: {
-        "Xero-tenant-id": tenant.tenantId,
-      },
-      searchParams: {
-        Statuses: "ACTIVE",
-        SummaryOnly: "True",
-        PageSize: 1_000,
-        Page: 1,
-      },
-    })
-    .json(),
-  tap(({ pagination }) => console.log("Xero contacts page: ", pagination)),
-  prop("Contacts"),
-);
+const xeroContacts = await xeroClient.getContacts();
 const xeroContactsFuse = new Fuse(xeroContacts, {
   keys: ["Name"],
   threshold: 0.1,
@@ -64,7 +24,7 @@ const xeroContactsFuse = new Fuse(xeroContacts, {
 outputCsv(toFile("data/xero-contacts.csv"), xeroContacts);
 
 const mahiMembers = pipe(
-  await loadCsv<MahiContact>("data/mahi-contacts.csv", {
+  await loadCsv<Mahi.Contact>("data/mahi-contacts.csv", {
     headers: true,
   }),
   // filter((row) => /(Kea|Cub|Scout)\ Youth/.test(row["Role Name"])),

@@ -1,0 +1,8 @@
+{
+  "name": "xero",
+  "type": "module",
+  "devDependencies": {},
+  "peerDependencies": {
+    "ky": "^1.8.1"
+  }
+}

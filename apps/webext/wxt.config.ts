@@ -5,6 +5,9 @@ import { defineConfig } from "wxt";
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   imports: false,
+  alias: {
+    "@mahibridge/xero": "../../packages/xero/src",
+  },
   vite: () => ({
     plugins: [tailwindcss()],
   }),
@@ -13,7 +16,7 @@ export default defineConfig({
     key: import.meta.env.VITE_EXT_PUBLIC_KEY,
     name: "Mahi Bridge",
     description: "A bridge between Mahi Tahi & Xero.",
-    version: "0.0.2",
+    version: "0.0.3",
     permissions: ["identity", "storage"],
     host_permissions: ["https://identity.xero.com/.well-known/openid-configuration", "https://api.xero.com/*"],
     action: {

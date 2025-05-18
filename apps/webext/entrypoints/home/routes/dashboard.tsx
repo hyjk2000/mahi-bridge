@@ -1,11 +1,11 @@
+import { createXeroAPIClient } from "@mahibridge/xero";
 import Fuse from "fuse.js";
-import ky from "ky";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataGrid } from "react-data-grid";
 import { type MetaFunction, redirect, useLoaderData } from "react-router";
 import { pick, reduce } from "remeda";
 import { loadCsv } from "../libs/csv";
-import type { Mahi, Xero } from "../libs/schema";
+import type { Mahi } from "../libs/types";
 import { getTokens } from "../libs/xero-auth";
 
 function Dashboard() {
@@ -76,6 +76,7 @@ function Dashboard() {
               {
                 ...pick(contacts[0].item, ["ContactID", "Name", "EmailAddress"]),
                 ...pick(member, [
+                  "National Database Number",
                   "Contact First Name",
                   "Contact Last Name",
                   "Family Contact Email Address",
@@ -99,7 +100,7 @@ function Dashboard() {
           <h2 className="my-4 text-lg font-semibold">Xero</h2>
           <dl className="[&>dt:not(:first-child)]:mt-4 [&>dt]:font-semibold">
             <dt>Organisation</dt>
-            <dd>{tenant.tenantName}</dd>
+            <dd>{tenant?.tenantName}</dd>
             <dt>Contacts</dt>
             <dd>{xeroContacts.length}</dd>
           </dl>
@@ -150,15 +151,15 @@ function Dashboard() {
               {
                 name: "Xero",
                 children: [
-                  { key: "ContactID", name: "#" },
                   { key: "Name", name: "Name" },
                   { key: "EmailAddress", name: "Email" },
-                  { key: "Contact First Name", name: "Mahi FName" },
                 ],
               },
               {
                 name: "Mahi Tahi",
                 children: [
+                  { key: "National Database Number", name: "#" },
+                  { key: "Contact First Name", name: "FName" },
                   { key: "Contact Last Name", name: "LName" },
                   { key: "Family Contact Email Address", name: "Email" },
                   { key: "Family Contact First Name", name: "FC FName" },
@@ -186,46 +187,15 @@ const loader = async () => {
   const tokens = await getTokens();
   if (!tokens) return redirect("/oauth-xero");
 
-  let restClient = ky.extend({
-    prefixUrl: "https://api.xero.com",
-    hooks: {
-      beforeRequest: [
-        async (request) => {
-          request.headers.set("Authorization", `Bearer ${tokens.access_token}`);
-        },
-      ],
-    },
-  });
-
-  const [tenant] = await restClient.get<Xero.Tenant[]>("connections").json();
-  restClient = restClient.extend({
-    headers: { "Xero-tenant-id": tenant.tenantId },
-  });
+  const xeroClient = createXeroAPIClient(tokens.access_token);
 
   const [xeroContactGroups, xeroContacts] = await Promise.all([
-    restClient
-      .get<{ ContactGroups: Xero.ContactGroup[] }>("api.xro/2.0/ContactGroups", {
-        searchParams: {
-          Statuses: "ACTIVE",
-        },
-      })
-      .json()
-      .then((data) => data.ContactGroups),
-    restClient
-      .get<Xero.Paginated & { Contacts: Xero.Contact[] }>("api.xro/2.0/Contacts", {
-        searchParams: {
-          Statuses: "ACTIVE",
-          SummaryOnly: "True",
-          PageSize: 1_000,
-          Page: 1,
-        },
-      })
-      .json()
-      .then((data) => data.Contacts),
+    xeroClient.getContactGroups(),
+    xeroClient.getContacts(),
   ]);
 
   return {
-    tenant,
+    tenant: xeroClient.tenant,
     xeroContactGroups,
     xeroContacts,
   };
